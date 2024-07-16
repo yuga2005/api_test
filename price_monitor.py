@@ -26,9 +26,9 @@ def fetch_bitcoin_price():
     url = 'https://api.coindesk.com/v1/bpi/currentprice.json'
     try:
         response = requests.get(url)
-        if response.status_code == 429:  # Too Many Requests
+        if response.status_code == 429:
             logging.warning('Rate limit exceeded. Waiting for 60 seconds.')
-            time.sleep(60)  # Wait for 60 seconds before retrying
+            time.sleep(60)
             return None
         response.raise_for_status()  
         data = response.json()
@@ -65,8 +65,8 @@ def monitor_price(lower_threshold, upper_threshold, interval=30):
         time.sleep(interval)
 
 if __name__ == '__main__':
-    lower_threshold = 29000.0  # Example lower threshold
-    upper_threshold = 31000.0  # Example upper threshold
+    lower_threshold = 29000.0  
+    upper_threshold = 31000.0  
 
     logging.info('Starting Bitcoin price monitor')
     monitor_price(lower_threshold, upper_threshold)
