@@ -49,8 +49,6 @@ def check_price(price, lower_threshold, upper_threshold):
     elif price > upper_threshold:
         logging.info(f'Alert: Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
         print(f'Alert: Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
-    else:
-        logging.info(f'Bitcoin price is within thresholds: ${price:.2f}')
 
 
 def monitor_price(lower_threshold, upper_threshold, interval=30):
