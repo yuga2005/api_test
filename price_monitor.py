@@ -18,8 +18,7 @@ import logging
 from datetime import datetime
 
 
-logging.basicConfig(filename='bitcoin_price_monitor.log', level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='bitcoin_price_monitor.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def fetch_bitcoin_price():
@@ -38,7 +37,7 @@ def fetch_bitcoin_price():
         else:
             logging.error('Unexpected response structure: Missing "rate_float" in "bpi"')
             return None
-    except requests.RequestException as e:
+    except Exception as e:
         logging.error(f'Error fetching Bitcoin price: {e}')
         return None
 
