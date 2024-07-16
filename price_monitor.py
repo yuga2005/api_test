@@ -21,7 +21,7 @@ from datetime import datetime
 logging.basicConfig(filename='bitcoin_price_monitor.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def fetch_bitcoin_price():
+def fetch_price():
     url = 'https://api.coindesk.com/v1/bpi/currentprice.json'
     try:
         response = requests.get(url)
@@ -53,8 +53,8 @@ def check_price(price, lower_threshold, upper_threshold):
 
 def monitor_price(lower_threshold, upper_threshold, interval=30):
     while True:
-        price = fetch_bitcoin_price()
-        if price is not None:
+        price = fetch_price()
+        if not price:
             logging.info(f'Current Bitcoin price: ${price:.2f}')
             check_price(price, lower_threshold, upper_threshold)
         else:
