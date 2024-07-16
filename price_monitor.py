@@ -26,9 +26,12 @@ def fetch_bitcoin_price():
     url = 'https://api.coindesk.com/v1/bpi/currentprice.json'
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raise an error for bad responses (4xx and 5xx)
+        if response.status_code == 429:  # Too Many Requests
+            logging.warning('Rate limit exceeded. Waiting for 60 seconds.')
+            time.sleep(60)  # Wait for 60 seconds before retrying
+            return None
+        response.raise_for_status()  
         data = response.json()
-        print(data)
         if 'bpi' in data and 'USD' in data['bpi'] and 'rate_float' in data['bpi']['USD']:
             price = data['bpi']['USD']['rate_float']
             return price
@@ -39,7 +42,7 @@ def fetch_bitcoin_price():
         logging.error(f'Error fetching Bitcoin price: {e}')
         return None
 
-# Function to check price against thresholds
+
 def check_price(price, lower_threshold, upper_threshold):
     if price < lower_threshold:
         logging.info(f'Alert: Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
@@ -50,7 +53,7 @@ def check_price(price, lower_threshold, upper_threshold):
     else:
         logging.info(f'Bitcoin price is within thresholds: ${price:.2f}')
 
-# Main function to monitor Bitcoin price
+
 def monitor_price(lower_threshold, upper_threshold, interval=30):
     while True:
         price = fetch_bitcoin_price()
@@ -62,9 +65,9 @@ def monitor_price(lower_threshold, upper_threshold, interval=30):
         time.sleep(interval)
 
 if __name__ == '__main__':
-    # Example threshold values, these can be set via command-line arguments or a config file
     lower_threshold = 29000.0  # Example lower threshold
     upper_threshold = 31000.0  # Example upper threshold
 
     logging.info('Starting Bitcoin price monitor')
     monitor_price(lower_threshold, upper_threshold)
+
