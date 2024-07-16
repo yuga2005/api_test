@@ -51,7 +51,8 @@ def check_price(price, lower_threshold, upper_threshold):
         print(f'Alert: Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
 
 
-def monitor_price(lower_threshold, upper_threshold, interval=30):
+def monitor_price(lower_threshold, upper_threshold):
+    interval=30
     while True:
         price = fetch_price()
         if not price:
