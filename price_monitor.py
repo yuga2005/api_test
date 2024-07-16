@@ -35,7 +35,7 @@ def fetch_price():
             price = data['bpi']['USD']['rate_float']
             return price
         else:
-            logging.error('Unexpected response structure: Missing "rate_float" in "bpi"')
+            logging.error('Missing "rate_float" in "bpi"')
             return None
     except Exception as e:
         logging.error(f'Error fetching Bitcoin price: {e}')
@@ -44,11 +44,11 @@ def fetch_price():
 
 def check_price(price, lower_threshold, upper_threshold):
     if price < lower_threshold:
-        logging.info(f'Alert: Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
-        print(f'Alert: Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
+        logging.info(f'Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
+        print(f'Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
     elif price > upper_threshold:
-        logging.info(f'Alert: Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
-        print(f'Alert: Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
+        logging.info(f'Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
+        print(f'Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
 
 
 def monitor_price(lower_threshold, upper_threshold):
