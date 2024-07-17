@@ -16,15 +16,17 @@ import requests
 import time
 import logging
 from datetime import datetime
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-logging.basicConfig(filename='bitcoin_price_monitor.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='bitcoin_price_monitor.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def fetch_price():
     url = 'https://api.coindesk.com/v1/bpi/currentprice.json'
     try:
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         if response.status_code == 429:
             logging.warning('Rate limit exceeded. Waiting for 60 seconds.')
             time.sleep(60)
@@ -35,27 +37,28 @@ def fetch_price():
             price = data['bpi']['USD']['rate_float']
             return price
         else:
-            logging.error('Missing "rate_float" in "bpi"')
+            logging.error('Unexpected response structure: Missing "rate_float" in "bpi"')
             return None
-    except Exception as e:
+    except requests.RequestException as e:
         logging.error(f'Error fetching Bitcoin price: {e}')
         return None
 
 
 def check_price(price, lower_threshold, upper_threshold):
     if price < lower_threshold:
-        logging.info(f'Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
-        print(f'Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
+        logging.info(f'Alert: Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
+        print(f'Alert: Bitcoin price has fallen below the threshold ${lower_threshold:.2f}')
     elif price > upper_threshold:
-        logging.info(f'Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
-        print(f'Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
+        logging.info(f'Alert: Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
+        print(f'Alert: Bitcoin price has risen above the threshold ${upper_threshold:.2f}')
+    else:
+        logging.info(f'Bitcoin price is within thresholds: ${price:.2f}')
 
 
-def monitor_price(lower_threshold, upper_threshold):
-    interval=30
+def monitor_price(lower_threshold, upper_threshold, interval=30):
     while True:
         price = fetch_price()
-        if not price:
+        if price is not None:
             logging.info(f'Current Bitcoin price: ${price:.2f}')
             check_price(price, lower_threshold, upper_threshold)
         else:
